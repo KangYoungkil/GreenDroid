@@ -195,6 +195,15 @@ public abstract class QuickActionWidget extends PopupWindow {
             mIsDirty = true;
         }
     }
+    
+    /**
+     * Gets the QuickAction at position
+     * @author kennydude
+     * @param position Position to get quick action from
+     */
+    public QuickAction getQuickAction(int position){
+    	return mQuickActions.get(position);
+    }
 
     /**
      * Removes all {@link QuickAction} from this {@link QuickActionWidget}.

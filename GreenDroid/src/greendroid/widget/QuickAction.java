@@ -26,11 +26,14 @@ import android.view.View;
  * QuickAction represents a single action and may contain a text and an icon.
  * 
  * @author Benjamin Fellous
+ * @author kennydude
  * @author Cyril Mottier
  */
 public class QuickAction {
 
     public Drawable mDrawable;
+    public int mTitleId; // @kennydude edit
+    public int mDrawableId; // @kennydude edit
     public CharSequence mTitle;
 
     /* package */WeakReference<View> mView;
@@ -48,11 +51,14 @@ public class QuickAction {
     public QuickAction(Context ctx, Drawable d, int titleId) {
         mDrawable = d;
         mTitle = ctx.getResources().getString(titleId);
+        mTitleId = titleId;
     }
 
     public QuickAction(Context ctx, int drawableId, int titleId) {
         mDrawable = ctx.getResources().getDrawable(drawableId);
+        mDrawableId = drawableId;
         mTitle = ctx.getResources().getString(titleId);
+        mTitleId = titleId;
     }
 
 }

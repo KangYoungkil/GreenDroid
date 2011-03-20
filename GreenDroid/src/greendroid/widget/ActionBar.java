@@ -211,9 +211,14 @@ public class ActionBar extends LinearLayout {
 
             final View itemView = item.getItemView();
             itemView.findViewById(R.id.gd_action_bar_item).setOnClickListener(mClickHandler);
-
-            final int size = (int) getResources().getDimension(R.dimen.gd_action_bar_height);
-            addView(itemView, new LayoutParams(size, LayoutParams.FILL_PARENT));
+            
+            // hack by @kennydude
+            if(TextActionBarItem.class.isInstance(item))
+            	addView(itemView);
+            else{
+            	final int size = (int) getResources().getDimension(R.dimen.gd_action_bar_height);
+            	addView(itemView, new LayoutParams(size, LayoutParams.FILL_PARENT));
+            }
 
             mItems.add(item);
         }
