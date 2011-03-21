@@ -35,4 +35,13 @@
     <string name="gd_sort_by_size">Sort by size</string>
     <string name="gd_locate_myself">Locate myself</string>
     
+    <string name="gd_pretty_now">Just Now</string>
+    <string name="gd_pretty_minute_ago">1 minute ago</string>
+    <string name="gd_pretty_minutes_ago">{x} minutes ago</string>
+    <string name="gd_pretty_hour_ago">1 hour ago</string>
+    <string name="gd_pretty_hours_ago">{x} hours ago</string>
+    <string name="gd_pretty_yesterday">Yesterday</string>
+    <string name="gd_pretty_days_ago">{x} days ago</string>
+    <string name="gd_pretty_weeks_ago">{x} weeks ago</string>
+    
 </resources>

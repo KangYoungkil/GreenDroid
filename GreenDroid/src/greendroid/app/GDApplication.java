@@ -26,7 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 
 /**
  * Defines various methods that should be overridden in order to style your
@@ -149,4 +151,19 @@ public class GDApplication extends Application {
             }
         }
     }
+    
+    @Override
+	public void onCreate(){
+    	super.onCreate();
+    	mResources = getResources();
+    }
+    
+    // @kennydude edits bellow!
+    static Resources mResources;
+    public static Resources getAppResources(){
+    	if(mResources == null)
+			mResources = new GDApplication().getResources();
+		return mResources;
+    }
+	
 }
