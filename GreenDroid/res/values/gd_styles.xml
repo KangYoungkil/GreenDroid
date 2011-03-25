@@ -175,7 +175,7 @@
     <style name="GreenDroid.Widget.QuickAction" />
     <style name="GreenDroid.Widget.QuickAction.Bar" />
     <style name="GreenDroid.Widget.QuickAction.Grid">
-        <item name="android:padding">7dp</item>
+        <item name="android:padding">3dp</item>
     	<item name="android:listSelector">@drawable/gd_quick_action_grid_selector</item>
     	<item name="android:background">@drawable/gd_quick_action_grid_bg</item>
     	<item name="android:gravity">center</item>
@@ -189,7 +189,7 @@
     	<item name="android:layout_height">fill_parent</item>
 		<item name="android:paddingRight">10dp</item>
 		<item name="android:paddingLeft">10dp</item>
-		<item name="android:drawablePadding">5dp</item>
+		<item name="android:drawablePadding">0dp</item>
 		<item name="android:textSize">14sp</item>
 		<item name="android:textColor">#333</item>
     </style>
