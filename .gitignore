@@ -2,10 +2,4 @@
 */gen/*
 *.DS_Store
 *.pyc
-bin/*
 bin
-
-# Prevent Git from versioning the GreenDroid library in the samples project.
-
-GDCatalog/src/greendroid/*
-GDCatalog/res/*/gd_*
