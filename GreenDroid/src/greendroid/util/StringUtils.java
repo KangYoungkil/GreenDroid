@@ -2,12 +2,10 @@ package greendroid.util;
 
 import greendroid.app.GDApplication;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import com.cyrilmottier.android.greendroid.R;
 
-import android.content.Context;
 import android.util.Log;
 
 /**
