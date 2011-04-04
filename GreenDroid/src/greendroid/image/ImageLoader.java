@@ -18,7 +18,6 @@ package greendroid.image;
 import greendroid.util.Config;
 import greendroid.util.GDUtils;
 
-import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -29,8 +28,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
+
+import com.github.droidfu.http.BetterHttp;
+import com.github.droidfu.http.BetterHttpResponse;
 
 /**
  * An ImageLoader asynchronously loads image from a given url. Client may be
@@ -46,156 +47,158 @@ import android.util.Log;
  */
 public class ImageLoader {
 
-    private static final String LOG_TAG = ImageLoader.class.getSimpleName();
+	private static final String LOG_TAG = ImageLoader.class.getSimpleName();
 
-    public static interface ImageLoaderCallback {
+	public static interface ImageLoaderCallback {
 
-        void onImageLoadingStarted(ImageLoader loader);
+		void onImageLoadingStarted(ImageLoader loader);
 
-        void onImageLoadingEnded(ImageLoader loader, Bitmap bitmap);
+		void onImageLoadingEnded(ImageLoader loader, Bitmap bitmap);
 
-        void onImageLoadingFailed(ImageLoader loader, Throwable exception);
-    }
+		void onImageLoadingFailed(ImageLoader loader, Throwable exception);
+	}
 
-    private static final int ON_START = 0x100;
-    private static final int ON_FAIL = 0x101;
-    private static final int ON_END = 0x102;
-    
-    private static ImageCache sImageCache;
-    private static ExecutorService sExecutor;
-    private static BitmapFactory.Options sDefaultOptions;
+	private static final int ON_START = 0x100;
+	private static final int ON_FAIL = 0x101;
+	private static final int ON_END = 0x102;
 
-    public ImageLoader(Context context) {
-        if (sImageCache == null) {
-            sImageCache = GDUtils.getImageCache(context);
-        }
-        if (sExecutor == null) {
-            sExecutor = GDUtils.getExecutor(context);
-        }
-        if (sDefaultOptions == null) {
-        	sDefaultOptions = new BitmapFactory.Options();
-        	sDefaultOptions.inDither = true;
-        	sDefaultOptions.inScaled = true;
-        	sDefaultOptions.inDensity = DisplayMetrics.DENSITY_MEDIUM;
-        	sDefaultOptions.inTargetDensity = context.getResources().getDisplayMetrics().densityDpi;
-        }
-    }
+	private static ImageCache sImageCache;
+	private static ExecutorService sExecutor;
 
-    public Future<?> loadImage(String url, ImageLoaderCallback callback) {
-        return loadImage(url, callback, null);
-    }
+	public ImageLoader(Context context) {
+		if (sImageCache == null) {
+			sImageCache = GDUtils.getImageCache(context);
+		}
+		if (sExecutor == null) {
+			sExecutor = GDUtils.getExecutor(context);
+		}
+	}
 
-    public Future<?> loadImage(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor) {
-        return loadImage(url, callback, bitmapProcessor, null);
-    }
-    
-    public Future<?> loadImage(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor, BitmapFactory.Options options) {
-        return sExecutor.submit(new ImageFetcher(url, callback, bitmapProcessor, options));
-    }
+	public Future<?> loadImage(String url, ImageLoaderCallback callback) {
+		return loadImage(url, callback, null);
+	}
 
-    private class ImageFetcher implements Runnable {
+	public Future<?> loadImage(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor) {
+		return loadImage(url, callback, bitmapProcessor, null);
+	}
 
-        private String mUrl;
-        private ImageHandler mHandler;
-        private ImageProcessor mBitmapProcessor;
-        private BitmapFactory.Options mOptions;
+	public Future<?> loadImage(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor,
+			BitmapFactory.Options options) {
+		return sExecutor.submit(new ImageFetcher(url, callback, bitmapProcessor));
+	}
 
-        public ImageFetcher(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor, BitmapFactory.Options options) {
-            mUrl = url;
-            mHandler = new ImageHandler(url, callback);
-            mBitmapProcessor = bitmapProcessor;
-            mOptions = options;
-        }
+	private class ImageFetcher implements Runnable {
 
-        public void run() {
+		private String mUrl;
+		private ImageHandler mHandler;
+		private ImageProcessor mBitmapProcessor;
 
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+		public ImageFetcher(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor) {
+			mUrl = url;
+			mHandler = new ImageHandler(url, callback);
+			mBitmapProcessor = bitmapProcessor;
+		}
 
-            final Handler h = mHandler;
-            Bitmap bitmap = null;
-            Throwable throwable = null;
+		public void run() {
 
-            h.sendMessage(Message.obtain(h, ON_START));
+			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
-            try {
+			final Handler h = mHandler;
+			Bitmap bitmap = null;
+			Throwable throwable = null;
 
-                if (TextUtils.isEmpty(mUrl)) {
-                    throw new Exception("The given URL cannot be null or empty");
-                }
+			h.sendMessage(Message.obtain(h, ON_START));
 
-                // TODO Cyril: Use a AndroidHttpClient?
-                bitmap = BitmapFactory.decodeStream(new URL(mUrl).openStream(), null, (mOptions == null) ? sDefaultOptions : mOptions);
+			try {
 
-                if (mBitmapProcessor != null && bitmap != null) {
-                    final Bitmap processedBitmap = mBitmapProcessor.processImage(bitmap);
-                    if (processedBitmap != null) {
-                        bitmap = processedBitmap;
-                    }
-                }
+				if (TextUtils.isEmpty(mUrl)) {
+					throw new Exception("The given URL cannot be null or empty");
+				}
 
-            } catch (Exception e) {
-                // An error occured while retrieving the image
-                if (Config.GD_ERROR_LOGS_ENABLED) {
-                    Log.e(LOG_TAG, "Error while fetching image", e);
-                }
-                throwable = e;
-            }
+				bitmap = sImageCache.get(mUrl);
 
-            if (bitmap == null) {
-                if (throwable == null) {
-                    // Skia returned a null bitmap ... that's usually because
-                    // the given url wasn't pointing to a valid image
-                    throwable = new Exception("Skia image decoding failed");
-                }
-                h.sendMessage(Message.obtain(h, ON_FAIL, throwable));
-            } else {
-                h.sendMessage(Message.obtain(h, ON_END, bitmap));
-            }
-        }
-    }
+				if (null == bitmap) {
 
-    private class ImageHandler extends Handler {
+					if (Config.GD_INFO_LOGS_ENABLED) {
+						Log.i(LOG_TAG, "Cache miss. Starting to load the image at the given URL");
+					}
 
-        private String mUrl;
-        private ImageLoaderCallback mCallback;
+					BetterHttpResponse response = BetterHttp.get(mUrl).send();
+					// image = response.getResponseBodyAsBytes();
+					ImageCacheHard.saveCacheFile(mUrl, response.getResponseBody());
+					bitmap = ImageCacheHard.getCacheFile(mUrl);
 
-        private ImageHandler(String url, ImageLoaderCallback callback) {
-            mUrl = url;
-            mCallback = callback;
-        }
+					if (mBitmapProcessor != null) {
+						final Bitmap processedBitmap = mBitmapProcessor.processImage(bitmap);
+						if (processedBitmap != null) {
+							bitmap = processedBitmap;
+						}
+					}
+				}
 
-        @Override
-        public void handleMessage(Message msg) {
+			} catch (Exception e) {
+				// An error occured while retrieving the image
+				if (Config.GD_ERROR_LOGS_ENABLED) {
+					Log.e(LOG_TAG, "Error while fetching image", e);
+				}
+				throwable = e;
+			}
 
-            switch (msg.what) {
+			if (bitmap == null) {
+				if (throwable == null) {
+					// Skia returned a null bitmap ... that's usually because
+					// the given url wasn't pointing to a valid image
+					throwable = new Exception("Skia image decoding failed");
+				}
+				h.sendMessage(Message.obtain(h, ON_FAIL, throwable));
+			} else {
+				h.sendMessage(Message.obtain(h, ON_END, bitmap));
+			}
+		}
+	}
 
-                case ON_START:
-                    if (mCallback != null) {
-                        mCallback.onImageLoadingStarted(ImageLoader.this);
-                    }
-                    break;
+	private class ImageHandler extends Handler {
 
-                case ON_FAIL:
-                    if (mCallback != null) {
-                        mCallback.onImageLoadingFailed(ImageLoader.this, (Throwable) msg.obj);
-                    }
-                    break;
+		private String mUrl;
+		private ImageLoaderCallback mCallback;
 
-                case ON_END:
+		private ImageHandler(String url, ImageLoaderCallback callback) {
+			mUrl = url;
+			mCallback = callback;
+		}
 
-                    final Bitmap bitmap = (Bitmap) msg.obj;
-                    sImageCache.put(mUrl, bitmap);
+		@Override
+		public void handleMessage(Message msg) {
 
-                    if (mCallback != null) {
-                        mCallback.onImageLoadingEnded(ImageLoader.this, bitmap);
-                    }
-                    break;
+			switch (msg.what) {
 
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        };
-    }
+			case ON_START:
+				if (mCallback != null) {
+					mCallback.onImageLoadingStarted(ImageLoader.this);
+				}
+				break;
+
+			case ON_FAIL:
+				if (mCallback != null) {
+					mCallback.onImageLoadingFailed(ImageLoader.this, (Throwable) msg.obj);
+				}
+				break;
+
+			case ON_END:
+
+				final Bitmap bitmap = (Bitmap) msg.obj;
+				sImageCache.put(mUrl, bitmap);
+
+				if (mCallback != null) {
+					mCallback.onImageLoadingEnded(ImageLoader.this, bitmap);
+				}
+				break;
+
+			default:
+				super.handleMessage(msg);
+				break;
+			}
+		};
+	}
 
 }
