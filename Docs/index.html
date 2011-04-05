@@ -1,0 +1,69 @@
+<html>
+<head>
+	<title>GreenDroid Documents</title>
+	<script type="text/javascript" src="showdown.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<style type="text/css">
+	body{
+		font-family: "Helvetica", sans-serif;
+		font-size: 12px;
+		padding: 0px;
+		background: #ddd;
+		margin: 0px;
+	}
+	#header{
+		background: #669900;
+		color: #fff;
+		border-bottom: 5px solid #fff;
+	}
+	#content{
+		margin: 10px auto;
+		width: 800px;
+		border: 1px solid #ccc;
+		background: #fff;
+	}
+	body > div{ padding: 10px; }
+	</style>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#homebutton").click(function(){
+			$("#maincontent,#backtick").hide();
+			$("#homecontent").show();
+		});
+		$("a").click(function(){
+			if($(this).attr("href") == "home"){
+				$("#maincontent, #backtick").hide();
+				$("#homecontent").show();
+				return false;
+			} else{
+				$.get($(this).attr("href") + ".markdown", function(data){
+					var converter = new Attacklab.showdown.converter();
+					$("#maincontent").html(converter.makeHtml(data)).show();
+					$("#backtick").show();
+					$("#homecontent").hide();
+				});
+				return false;
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+	<div id="header">
+		<img src="gd_action_bar_home.png" style="float: left; margin-top: -5px; margin-right: 5px;" id="homebutton" />
+		GreenDroid Documentation
+	</div>
+	<div id="content">
+		<span id="homecontent">
+			<h1>Welcome to GreenDroid Documentation</h1>
+			<p>Please select a page to view the documentation on. Please remember to run this from a local webserver or view the markdown files elsewhere!</p>
+			<ul>
+				<li><a href="gettingstarted">Getting Started with GreenDroid</a></li>
+				<li><a href="asyncimageview">AsyncImageView</a></li>
+			</ul>
+		</span>
+		<div id="backtick" style="display:none"><a href="home">&lt; Go back</a></div>
+		<span id="maincontent"></span>
+	</div>
+</body>
+</html>
