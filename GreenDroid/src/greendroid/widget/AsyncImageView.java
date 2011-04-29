@@ -94,6 +94,10 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 		 */
 		void onLoadingFailed(AsyncImageView imageView, Throwable throwable);
 	}
+	
+	public static interface OnViewSizeListener{
+		void onViewSizeCached(Integer width, Integer height);
+	}
 
 	private static final int IMAGE_SOURCE_UNKNOWN = -1;
 	private static final int IMAGE_SOURCE_RESOURCE = 0;
@@ -111,8 +115,12 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 
 	private Bitmap mBitmap;
 	private OnImageViewLoadListener mOnImageViewLoadListener;
+	private OnViewSizeListener mOnViewSizeListener;
 	private ImageProcessor mImageProcessor;
 	private BitmapFactory.Options mOptions;
+	
+	public Integer mWidth;
+	public Integer mHeight;
 
 	public AsyncImageView(Context context) {
 		this(context, null);
@@ -276,6 +284,15 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 	public void setOnImageViewLoadListener(OnImageViewLoadListener listener) {
 		mOnImageViewLoadListener = listener;
 	}
+	
+	public void setOnViewSizeListener(OnViewSizeListener listener) {
+		mOnViewSizeListener = listener;
+	}
+	
+	public void setCachedViewSize(Integer width, Integer height){
+		mWidth = width;
+		mHeight = height;
+	}
 
 	/**
 	 * Set the url of the image that will be used as the content of this
@@ -390,6 +407,8 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 
 	static class SavedState extends BaseSavedState {
 		String url;
+		int width;
+		int height;
 
 		SavedState(Parcelable superState) {
 			super(superState);
@@ -398,12 +417,16 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 		private SavedState(Parcel in) {
 			super(in);
 			url = in.readString();
+			width = in.readInt();
+			height = in.readInt();
 		}
 
 		@Override
 		public void writeToParcel(Parcel out, int flags) {
 			super.writeToParcel(out, flags);
 			out.writeString(url);
+			out.writeInt(width);
+			out.writeInt(height);
 		}
 
 		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
@@ -423,15 +446,33 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 		SavedState ss = new SavedState(superState);
 
 		ss.url = mUrl;
-
+		ss.width = mWidth;
+		ss.height = mHeight;
 		return ss;
 	}
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    	if(this.mWidth == null){ // Not measured
+    		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    		if(this.mBitmap != null){
+    			this.mWidth = getMeasuredWidth();
+    			this.mHeight = getMeasuredHeight();
+    			if(this.mOnViewSizeListener != null){
+    				this.mOnViewSizeListener.onViewSizeCached(this.mWidth, this.mHeight);
+    			}
+    		}
+    	} else{
+    		setMeasuredDimension(this.mWidth, this.mHeight);
+    	}
+    }
+	
 	@Override
 	public void onRestoreInstanceState(Parcelable state) {
 		SavedState ss = (SavedState) state;
+		mWidth = ss.width;
+		mHeight = ss.height;
 		super.onRestoreInstanceState(ss.getSuperState());
-
 		setUrl(ss.url);
 	}
 

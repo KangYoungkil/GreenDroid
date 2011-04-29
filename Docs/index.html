@@ -26,6 +26,11 @@
 	</style>
 	<script type="text/javascript">
 	$(document).ready(function(){
+		$.ajaxSetup({
+			error : function(){
+				alert("Whoops! An AJAX error occured. Please check that this on a webserver!");
+			}
+		});
 		$("#homebutton").click(function(){
 			$("#maincontent,#backtick").hide();
 			$("#homecontent").show();
@@ -50,7 +55,7 @@
 </head>
 <body>
 	<div id="header">
-		<img src="gd_action_bar_home.png" style="float: left; margin-top: -5px; margin-right: 5px;" id="homebutton" />
+		<img src="gd_action_bar_home.png" style="float: left; margin-top: -5px; margin-right: 5px;cursor:hand" id="homebutton" />
 		GreenDroid Documentation
 	</div>
 	<div id="content">
@@ -60,6 +65,8 @@
 			<ul>
 				<li><a href="gettingstarted">Getting Started with GreenDroid</a></li>
 				<li><a href="asyncimageview">AsyncImageView</a></li>
+				<li><a href="problemswithhttps">Problems with HTTPS</a></li>
+				<li><a href="quickactions">QuickActions</a></li>
 			</ul>
 		</span>
 		<div id="backtick" style="display:none"><a href="home">&lt; Go back</a></div>
