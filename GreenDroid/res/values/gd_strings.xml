@@ -52,8 +52,14 @@
     <string name="gd_pretty_minutes_ago">{x} minutes ago</string>
     <string name="gd_pretty_hour_ago">1 hour ago</string>
     <string name="gd_pretty_hours_ago">{x} hours ago</string>
+    <string name="gd_pretty_seconds_ago">{x} seconds ago</string>
+    <string name="gd_pretty_years_ago">{x} years ago</string>
+    <string name="gd_pretty_months_ago">{x} months ago</string>
     <string name="gd_pretty_yesterday">Yesterday</string>
     <string name="gd_pretty_days_ago">{x} days ago</string>
     <string name="gd_pretty_weeks_ago">{x} weeks ago</string>
+   	<string name="gd_pretty_last_week">Last Week</string>
+   	<string name="gd_pretty_last_month">Last Month</string>
+   	<string name="gd_pretty_last_year">Last Year</string>
     
 </resources>
