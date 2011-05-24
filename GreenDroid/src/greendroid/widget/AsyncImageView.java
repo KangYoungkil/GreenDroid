@@ -490,10 +490,12 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 	}
 
 	public void onImageRequestEnded(ImageRequest request, Bitmap image) {
-		mBitmap = image;
-		setImageBitmap(image);
-		if (mOnImageViewLoadListener != null) {
-			mOnImageViewLoadListener.onLoadingEnded(this, image);
+		if (this.mUrl.equals(request.getUrl())) {
+			mBitmap = image;
+			setImageBitmap(image);
+			if (mOnImageViewLoadListener != null) {
+				mOnImageViewLoadListener.onLoadingEnded(this, image);
+			}
 		}
 		mRequest = null;
 	}
