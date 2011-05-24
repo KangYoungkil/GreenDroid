@@ -119,8 +119,8 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 	private ImageProcessor mImageProcessor;
 	private BitmapFactory.Options mOptions;
 	
-	public Integer mWidth;
-	public Integer mHeight;
+	public Integer mWidth = -1;
+	public Integer mHeight = -1;
 
 	public AsyncImageView(Context context) {
 		this(context, null);
@@ -453,7 +453,7 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    	if(this.mWidth == null){ // Not measured
+    	if(this.mWidth == -1){ // Not measured
     		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     		if(this.mBitmap != null){
     			this.mWidth = getMeasuredWidth();

@@ -62,8 +62,7 @@ To start with, add two integers to your data item (you don't need to set them) a
 			DailyboothItem y = (DailyboothItem)DailyboothFeedAdapter.this.getItem(i);
 			y.width = width;
 			y.height = height;
-			DailyboothFeedAdapter.this.remove(y);
-			DailyboothFeedAdapter.this.insert(y, i); // update
+			DailyboothView.this.images_to_show.set(i, y); // update
 		}
 	});
 	if(xy.width != null){ // cached
