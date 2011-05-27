@@ -67,24 +67,24 @@ public class ImageCacheHardStore {
 		return INSTANCE;
 	}
 
-	public void saveCacheFile(String cacheUri, InputStream in) {
+	public void saveCacheFile(String cacheUri, Bitmap in) {
 		String fileLocalName = getFileNameFromURL(cacheUri);
 
 		File fileUri = new File(fullCacheDir.toString(), fileLocalName);
 		FileOutputStream outStream = null;
 		try {
 			outStream = new FileOutputStream(fileUri);
-
-			byte[] buffer = new byte[4096];
+			in.compress(Bitmap.CompressFormat.JPEG, 8, outStream);
+			/*byte[] buffer = new byte[4096];
 			int len = in.read(buffer);
 			while (len != -1) {
 				outStream.write(buffer, 0, len);
 				len = in.read(buffer);
-			}
+			}*/
 
-			buffer = null;
+			//buffer = null;
 			outStream.flush();
-			in.close();
+			//in.close();
 			in = null;
 			outStream.close();
 			outStream = null;

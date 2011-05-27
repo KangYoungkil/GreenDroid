@@ -11,7 +11,7 @@ import java.io.InputStream;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
-public class ImageCacheHard {
+public class ImageCacheHard extends ImageCache {
 
 	// Singleton of the actual SD Cache
 	private static ImageCacheHardStore cache = ImageCacheHardStore.getInstance();
@@ -27,29 +27,32 @@ public class ImageCacheHard {
 	}
 
 	public static void saveCacheFile(String cacheUri, InputStream image) {
-		if (isCacheWritable()) {
-			cache.saveCacheFile(cacheUri, image);
-		}
+		
 	}
 
-	/**
-	 * @param imageUri
-	 *            - URI of the Image on the Internet
-	 * @return Bitmap associated with URI if available, else null
-	 */
-	public static Bitmap getCacheFile(String imageUri) {
+	@Override
+	public void flush() {
+		cache.deleteCache();
+	}
+
+	@Override
+	public Bitmap get(String url) {
 		if (isCacheAvailable()) {
-			return cache.getCacheFile(imageUri);
+			return cache.getCacheFile(url);
 		}
 		return null;
 	}
 
-	/**
-	 * Clear SD Card cache.
-	 * 
-	 * @return int - number of files deleted
-	 */
-	public static int clearCache() {
-		return cache.deleteCache();
+	@Override
+	public void put(String url, Bitmap bitmap) {
+		if (isCacheWritable()) {
+			cache.saveCacheFile(url, bitmap);
+		}
 	}
+
+	@Override
+	void resetPurgeTimer() {}
+
+	@Override
+	public void onLowMemoryReceived() { }
 }

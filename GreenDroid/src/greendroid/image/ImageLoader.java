@@ -18,6 +18,7 @@ package greendroid.image;
 import greendroid.util.Config;
 import greendroid.util.GDUtils;
 
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -28,10 +29,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
-
-import com.github.droidfu.http.BetterHttp;
-import com.github.droidfu.http.BetterHttpResponse;
 
 /**
  * An ImageLoader asynchronously loads image from a given url. Client may be
@@ -64,6 +63,7 @@ public class ImageLoader {
 
 	private static ImageCache sImageCache;
 	private static ExecutorService sExecutor;
+	private static BitmapFactory.Options sDefaultOptions;
 
 	public ImageLoader(Context context) {
 		if (sImageCache == null) {
@@ -72,6 +72,13 @@ public class ImageLoader {
 		if (sExecutor == null) {
 			sExecutor = GDUtils.getExecutor(context);
 		}
+		if (sDefaultOptions == null) {
+        	sDefaultOptions = new BitmapFactory.Options();
+        	sDefaultOptions.inDither = true;
+        	sDefaultOptions.inScaled = true;
+        	sDefaultOptions.inDensity = DisplayMetrics.DENSITY_MEDIUM;
+        	sDefaultOptions.inTargetDensity = context.getResources().getDisplayMetrics().densityDpi;
+        }
 	}
 
 	public Future<?> loadImage(String url, ImageLoaderCallback callback) {
@@ -84,7 +91,7 @@ public class ImageLoader {
 
 	public Future<?> loadImage(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor,
 			BitmapFactory.Options options) {
-		return sExecutor.submit(new ImageFetcher(url, callback, bitmapProcessor));
+		return sExecutor.submit(new ImageFetcher(url, callback, bitmapProcessor, options));
 	}
 
 	private class ImageFetcher implements Runnable {
@@ -92,11 +99,13 @@ public class ImageLoader {
 		private String mUrl;
 		private ImageHandler mHandler;
 		private ImageProcessor mBitmapProcessor;
+		private BitmapFactory.Options mOptions;
 
-		public ImageFetcher(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor) {
+		public ImageFetcher(String url, ImageLoaderCallback callback, ImageProcessor bitmapProcessor, BitmapFactory.Options options) {
 			mUrl = url;
 			mHandler = new ImageHandler(url, callback);
 			mBitmapProcessor = bitmapProcessor;
+			mOptions = options;
 		}
 
 		public void run() {
@@ -122,11 +131,12 @@ public class ImageLoader {
 					if (Config.GD_INFO_LOGS_ENABLED) {
 						Log.i(LOG_TAG, "Cache miss. Starting to load the image at the given URL");
 					}
-
-					BetterHttpResponse response = BetterHttp.get(mUrl).send();
-					// image = response.getResponseBodyAsBytes();
-					ImageCacheHard.saveCacheFile(mUrl, response.getResponseBody());
-					bitmap = ImageCacheHard.getCacheFile(mUrl);
+					// TODO: USE A HTTP CLIENT HERE AND MAKE IMAGECACHE EXTENDABLE!
+					
+					// TODO Cyril: Use a AndroidHttpClient?
+	                bitmap = BitmapFactory.decodeStream(new URL(mUrl).openStream(), null, (mOptions == null) ? sDefaultOptions : mOptions);
+					// ImageCacheHard.saveCacheFile(mUrl, response.getResponseBody());
+					// bitmap = ImageCacheHard.getCacheFile(mUrl);
 
 					if (mBitmapProcessor != null) {
 						final Bitmap processedBitmap = mBitmapProcessor.processImage(bitmap);

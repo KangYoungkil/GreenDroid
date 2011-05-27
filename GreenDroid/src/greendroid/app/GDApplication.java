@@ -16,6 +16,8 @@
 package greendroid.app;
 
 import greendroid.image.ImageCache;
+import greendroid.image.ImageCacheHard;
+import greendroid.image.ImageCacheSoft;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Environment;
 
 /**
  * Defines various methods that should be overridden in order to style your
@@ -78,7 +81,25 @@ public class GDApplication extends Application {
 
     public ImageCache getImageCache() {
         if (mImageCache == null) {
-            mImageCache = new ImageCache(this);
+        	// From: http://developer.android.com/guide/topics/data/data-storage.html
+        	boolean mExternalStorageWriteable = false;
+        	String state = Environment.getExternalStorageState();
+
+        	if (Environment.MEDIA_MOUNTED.equals(state)) {
+        	    // We can read and write the media
+        	    mExternalStorageWriteable = true;
+        	} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+        	    // We can only read the media
+        	    mExternalStorageWriteable = false;
+        	} else {
+        	    // Something else is wrong. It may be one of many other states, but all we need
+        	    //  to know is we can neither read nor write
+        	    mExternalStorageWriteable = false;
+        	}
+        	if(mExternalStorageWriteable == true)
+        		mImageCache = new ImageCacheHard();
+        	else
+        		mImageCache = new ImageCacheSoft(this);
         }
         return mImageCache;
     }

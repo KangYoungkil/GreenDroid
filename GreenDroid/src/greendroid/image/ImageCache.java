@@ -26,65 +26,18 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 
-public class ImageCache implements OnLowMemoryListener {
-
-	private static final int DELAY_BEFORE_PURGE = 30 * 1000; // in milliseconds
-
-	private final ConcurrentHashMap<String, SoftReference<Bitmap>> mSoftCache;
-
-	private final Handler purgeHandler = new Handler();
-
-	private final Runnable purger = new Runnable() {
-		public void run() {
-			Log.i("ImageCache", "Flushing Memory Cache");
-			flush();
-		}
-	};
-
-	public ImageCache(Context context) {
-		mSoftCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>();
-		GDUtils.getGDApplication(context).registerOnLowMemoryListener(this);
-	}
+public abstract class ImageCache implements OnLowMemoryListener {
 
 	public static ImageCache from(Context context) {
 		return GDUtils.getImageCache(context);
 	}
 
-	public Bitmap get(String url) {
-		resetPurgeTimer();
+	public abstract Bitmap get(String url);
 
-		Bitmap bitmap = null;
+	public abstract void put(String url, Bitmap bitmap);
 
-		// Try and get bitmap from in-memory cache
-		final SoftReference<Bitmap> ref = mSoftCache.get(url);
-		if (ref != null) {
-			bitmap = ref.get();
-		}
+	public abstract void flush();
+	
+	abstract void resetPurgeTimer();
 
-		if (bitmap == null) {
-			mSoftCache.remove(url);
-
-			// Get bitmap from Hard Cache (SD-Card)
-			bitmap = ImageCacheHard.getCacheFile(url);
-		}
-
-		return bitmap;
-	}
-
-	public void put(String url, Bitmap bitmap) {
-		mSoftCache.put(url, new SoftReference<Bitmap>(bitmap));
-	}
-
-	public void flush() {
-		mSoftCache.clear();
-	}
-
-	private void resetPurgeTimer() {
-		purgeHandler.removeCallbacks(purger);
-		purgeHandler.postDelayed(purger, DELAY_BEFORE_PURGE);
-	}
-
-	public void onLowMemoryReceived() {
-		flush();
-	}
 }
