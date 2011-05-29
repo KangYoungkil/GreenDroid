@@ -33,8 +33,7 @@ public class ImageCacheHardStore {
 			sOptions.inScaled = true;
 		}
 
-		fullCacheDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-				"/Android/data/"+ app.getPackageName() +"/cache");
+		fullCacheDir = new File(app.getCacheDir(), "cache");
 		if (!fullCacheDir.exists()) {
 			if (Config.GD_INFO_LOGS_ENABLED) {
 				Log.i("CACHE", "Directory doesn't exist");
@@ -76,7 +75,7 @@ public class ImageCacheHardStore {
 		FileOutputStream outStream = null;
 		try {
 			outStream = new FileOutputStream(fileUri);
-			in.compress(Bitmap.CompressFormat.JPEG, 8, outStream);
+			in.compress(Bitmap.CompressFormat.PNG, 80, outStream);
 			/*byte[] buffer = new byte[4096];
 			int len = in.read(buffer);
 			while (len != -1) {
@@ -98,7 +97,7 @@ public class ImageCacheHardStore {
 			if (Config.GD_INFO_LOGS_ENABLED) {
 				Log.i("CACHE", "Error: File " + cacheUri + " was not found!");
 			}
-			e.printStackTrace();
+			// REMOVED ERROR OUTPUT BECAUSE IT'S PIDDLING ME OFF!
 		} catch (IOException e) {
 			if (Config.GD_INFO_LOGS_ENABLED) {
 				Log.i("CACHE", "Error: File could not be stuffed!");
@@ -112,8 +111,10 @@ public class ImageCacheHardStore {
 		File fileUri = new File(fullCacheDir.getAbsolutePath(), getFileNameFromURL(cacheUri));
 		if (!fileUri.exists()) return null;
 
-		if ((fileUri.lastModified() + 172800000) < System.currentTimeMillis() && cacheUri.contains("graph.facebook.com")) {
+		// Cache life of about 6 hours. TODO: Option
+		if ((fileUri.lastModified() + (60*60*6)) < System.currentTimeMillis()) {
 			if (fileUri.delete()) {
+				Log.d("CACHE", "An old cached version of a file was deleted");
 				return null;
 			}
 		}
