@@ -18,13 +18,8 @@ package greendroid.image;
 import greendroid.app.GDApplication.OnLowMemoryListener;
 import greendroid.util.GDUtils;
 
-import java.lang.ref.SoftReference;
-import java.util.concurrent.ConcurrentHashMap;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.util.Log;
 
 public abstract class ImageCache implements OnLowMemoryListener {
 

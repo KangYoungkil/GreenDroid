@@ -4,6 +4,7 @@ package greendroid.image;
  * @author Sergi Juanola
  */
 import greendroid.util.Config;
+import greendroid.util.GDUtils;
 import greendroid.util.Md5Util;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -23,7 +25,7 @@ public class ImageCacheHardStore {
 	private File fullCacheDir;
 	private static BitmapFactory.Options sOptions;
 
-	private ImageCacheHardStore() {
+	private ImageCacheHardStore(Application app) {
 
 		if (sOptions == null) {
 			sOptions = new BitmapFactory.Options();
@@ -32,7 +34,7 @@ public class ImageCacheHardStore {
 		}
 
 		fullCacheDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-				"/Android/data/uk.co.senab.blueNotify/cache");
+				"/Android/data/"+ app.getPackageName() +"/cache");
 		if (!fullCacheDir.exists()) {
 			if (Config.GD_INFO_LOGS_ENABLED) {
 				Log.i("CACHE", "Directory doesn't exist");
@@ -56,14 +58,14 @@ public class ImageCacheHardStore {
 		}
 	}
 
-	private synchronized static void createInstance() {
+	private synchronized static void createInstance(Application app) {
 		if (INSTANCE == null) {
-			INSTANCE = new ImageCacheHardStore();
+			INSTANCE = new ImageCacheHardStore(app);
 		}
 	}
 
-	public static ImageCacheHardStore getInstance() {
-		if (INSTANCE == null) createInstance();
+	public static ImageCacheHardStore getInstance(Application app) {
+		if (INSTANCE == null) createInstance(app);
 		return INSTANCE;
 	}
 

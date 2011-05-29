@@ -8,13 +8,19 @@ package greendroid.image;
  */
 import java.io.InputStream;
 
+import android.app.Application;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
 public class ImageCacheHard extends ImageCache {
+	
+	public ImageCacheHard(Application app){
+		super();
+		cache = ImageCacheHardStore.getInstance(app);
+	}
 
 	// Singleton of the actual SD Cache
-	private static ImageCacheHardStore cache = ImageCacheHardStore.getInstance();
+	private static ImageCacheHardStore cache;
 
 	public static boolean isCacheAvailable() {
 		final String state = Environment.getExternalStorageState();

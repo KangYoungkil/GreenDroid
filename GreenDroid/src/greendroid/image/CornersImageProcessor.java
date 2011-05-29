@@ -17,6 +17,13 @@ import android.graphics.RectF;
  *
  */
 public class CornersImageProcessor implements ImageProcessor {
+	public CornersImageProcessor(){
+		super();
+	}
+	public CornersImageProcessor(Integer radius){
+		mRadius = radius;
+	}
+	Integer mRadius = 20;
 
 	/* (non-Javadoc)
 	 * @see greendroid.image.ImageProcessor#processImage(android.graphics.Bitmap)
@@ -30,7 +37,8 @@ public class CornersImageProcessor implements ImageProcessor {
     		Canvas canvas = new Canvas(rounder);
     		Paint xferPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     		xferPaint.setColor(Color.RED);
-    		canvas.drawRoundRect(new RectF(0,0,w,h), 20.0f, 20.0f, xferPaint);
+    		Float radius = new Float(mRadius);
+    		canvas.drawRoundRect(new RectF(0,0,w,h), radius, radius, xferPaint);
     		xferPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
     		canvas.drawBitmap(input, 0,0, xferPaint);
     		// canvas.drawBitmap(rounder, 0, 0, xferPaint);

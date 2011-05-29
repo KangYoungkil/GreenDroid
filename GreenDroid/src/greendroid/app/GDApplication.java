@@ -97,7 +97,7 @@ public class GDApplication extends Application {
         	    mExternalStorageWriteable = false;
         	}
         	if(mExternalStorageWriteable == true)
-        		mImageCache = new ImageCacheHard();
+        		mImageCache = new ImageCacheHard(this);
         	else
         		mImageCache = new ImageCacheSoft(this);
         }
