@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
-** Copyright (C) 2010 Cyril Mottier (http://www.cyrilmottier.com)
+** Copyright (C) 2011 Cyril Mottier (http://www.cyrilmottier.com)
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -16,14 +16,10 @@
 ** limitations under the License.
 */
 -->
-
-<TextView
+<com.google.android.maps.MapView
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	style="?attr/gdTabIndicatorStyle"
-	android:layout_width="0dp"
-	android:layout_weight="1"
-	android:gravity="center"
-	android:paddingRight="4dp"
-	android:paddingLeft="4dp"
-	android:singleLine="true"
-	android:ellipsize="end" />
+	android:id="@+id/map_view"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:clickable="true"
+	android:apiKey="@string/google_map_api_key_debug" />

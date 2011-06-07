@@ -84,6 +84,8 @@
 	<attr name="gdActionBarDividerWidth" format="dimension" />
 	<attr name="gdActionBarApplicationDrawable" format="reference" /> 
 	<attr name="gdActionBarHomeDrawable" format="reference" />
+	<attr name="gdActionBarItemColorNormal" format="reference|color" />
+	<attr name="gdActionBarItemColorAlt" format="reference|color" />
 
 	<attr name="gdActionBarStyle" format="reference" />
 	<attr name="gdActionBarTitleStyle" format="reference" />
@@ -93,12 +95,17 @@
 	<attr name="gdTabIndicatorHeight" format="dimension" />
 	<attr name="gdTabIndicatorTextAppearance" format="reference" />
 	<attr name="gdTabIndicatorBackground" format="reference" />
+	
+	<attr name="gdTabIndicatorStyle" format="reference" />
 
 	<!-- QuickAction related attributes -->
 	<attr name="gdQuickActionBarStyle" format="reference" />
 	<attr name="gdQuickActionBarItemStyle" format="reference" />
 	<attr name="gdQuickActionGridStyle" format="reference" />
 	<attr name="gdQuickActionGridItemStyle" format="reference" />
+	
+	<!-- PageIndicator related attributes -->
+	<attr name="gdPageIndicatorStyle" format="reference" />
 
 
 	<!--			-->
@@ -136,8 +143,8 @@
 
 	<declare-styleable name="ThumbnailItem">
 		<attr name="thumbnail" format="reference" />
+		<attr name="thumbnailURL" format="string" />
 	</declare-styleable>
-
 
 	<!-- SegmentedBar related attributes -->
 	<declare-styleable name="SegmentedBar">
@@ -174,5 +181,25 @@
 			<enum name="xhdpi" value="320" />
 		</attr>
 	</declare-styleable>
+	
+	<declare-styleable name="PageIndicator">
+		<attr name="dotCount" format="integer" />
+		<attr name="activeDot" format="integer" />
+		<attr name="dotDrawable" format="reference" />
+		<attr name="dotSpacing" format="dimension" />
+		<attr name="gravity">
+			<flag name="top" value="0x30" />
+			<flag name="bottom" value="0x50" />
+			<flag name="left" value="0x03" />
+			<flag name="right" value="0x05" />
+			<flag name="center_vertical" value="0x10" />
+			<flag name="center_horizontal" value="0x01" />
+			<flag name="center" value="0x11" />
+		</attr>
+		<attr name="dotType">
+			<enum name="single" value="0" />
+			<enum name="multiple" value="1" />
+		</attr>
+    </declare-styleable>
 
 </resources>

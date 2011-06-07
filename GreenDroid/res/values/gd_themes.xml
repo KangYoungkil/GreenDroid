@@ -81,6 +81,8 @@
 		<item name="gdActionBarDividerWidth">1px</item>
 		<item name="gdActionBarApplicationDrawable">@null</item>
 		<item name="gdActionBarHomeDrawable">@null</item>
+		<item name="gdActionBarItemColorNormal">@android:color/white</item>
+		<item name="gdActionBarItemColorAlt">@android:color/black</item>
 
 		<item name="gdActionBarStyle">@style/GreenDroid.Widget.ActionBar</item>
 		<item name="gdActionBarTitleStyle">@style/GreenDroid.Widget.ActionBar.Title</item>
@@ -90,11 +92,14 @@
 		<item name="gdTabIndicatorTextAppearance">@style/TextAppearance.TabIndicator</item>
 		<item name="gdTabIndicatorBackground">@drawable/gd_tab_indicator</item>
 		
+		<item name="gdTabIndicatorStyle">@style/GreenDroid.Widget.TabIndicator</item>
+		
 		<item name="gdQuickActionBarStyle">@style/GreenDroid.Widget.QuickAction.Bar</item>
 		<item name="gdQuickActionBarItemStyle">@style/GreenDroid.Widget.QuickAction.Bar.Item</item>
 		<item name="gdQuickActionGridStyle">@style/GreenDroid.Widget.QuickAction.Grid</item>
 		<item name="gdQuickActionGridItemStyle">@style/GreenDroid.Widget.QuickAction.Grid.Item</item>
 		
+		<item name="gdPageIndicatorStyle">@style/GreenDroid.Widget.PageIndicator</item>
 	</style>
 	
 	

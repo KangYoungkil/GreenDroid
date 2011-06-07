@@ -18,6 +18,12 @@
 -->
 
 <resources>
+	<style name="GreenDroid.Widget.TabIndicator" parent="@style/GreenDroid.Widget">
+		<item name="android:layout_height">?attr/gdTabIndicatorHeight</item>
+		<item name="android:textAppearance">?attr/gdTabIndicatorTextAppearance</item>
+		<item name="android:background">?attr/gdTabIndicatorBackground</item>
+	</style>
+
 
 	<style name="TextAppearance">
 		<item name="android:textColor">?android:attr/textColorPrimary</item>
@@ -145,7 +151,6 @@
 		<item name="segmentedContentView">@id/gd_segmented_content_view</item>
 	</style>
 
-
 	<!-- ActionBar related styles -->
     <style name="GreenDroid.Widget.ActionBar">
         <item name="android:background">?attr/gdActionBarBackground</item>
@@ -202,6 +207,10 @@
 	<style name="GreenDroid.Widget.QuickAction.Grid.Item" parent="@style/GreenDroid.Widget.QuickAction.Item">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">65dp</item>
+	</style>
+	
+	<style name="GreenDroid.Widget.PageIndicator">
+		<item name="dotDrawable">@drawable/gd_page_indicator_dot</item>
 	</style>
 	   
 	   <!-- PopDownMenu -->
