@@ -19,7 +19,7 @@
 
 <resources>
 
-	<style name="Theme.GreenDroid" parent="@android:style/Theme.Light">
+	<style name="Theme.GreenDroid" parent="@android:style/Theme">
 	
 		<item name="gdTextAppearance">@style/TextAppearance</item>
 		<item name="gdTextAppearanceLarge">@style/TextAppearance.Large</item>
