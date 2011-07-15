@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -226,27 +227,49 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
      */
     public void reload(boolean force) {
         if (mRequest == null && mUrl != null) {
-
-            // Prior downloading the image ... let's look in a cache !
-            // TODO cyril: This is a synchronous call ... make it asynchronous
-            mBitmap = null;
+        	new ReloadImageTask().execute(force, mUrl);
+        }
+    }
+    
+    /**
+     * Reload is now ASYNC!
+     * @author kennydude
+     *
+     */
+    private class ReloadImageTask extends AsyncTask<Object, String, Object>{
+    	@Override
+    	protected void onPostExecute(Object r){
+    		if(r.getClass().equals(ImageRequest.class)){
+    			setDefaultImage();
+    			mRequest = (ImageRequest) r;
+    			mRequest.load(getContext());
+    		}else if(r != null){
+    			setImageBitmap((Bitmap)r);
+    		}
+    	}
+    	
+		@Override
+		protected Object doInBackground(Object... args) {
+			String mUrl = (String) args[1];
+			Boolean force = (Boolean) args[0];
+			
+			// Prior downloading the image ... let's look in a cache !
+			Bitmap mBitmap = null;
             if (!force) {
                 mBitmap = GDUtils.getImageCache(getContext()).get(mUrl);
-            }
-
-            if (mBitmap != null) {
-                setImageBitmap(mBitmap);
-                return;
+                if (mBitmap != null) {
+                	return mBitmap;
+                }
             }
 
             if (Config.GD_INFO_LOGS_ENABLED) {
                 Log.i(LOG_TAG, "Cache miss. Starting to load the image at the given URL");
             }
 
-            setDefaultImage();
-            mRequest = new ImageRequest(mUrl, this, mImageProcessor, mOptions);
-            mRequest.load(getContext());
-        }
+            ImageRequest mRequest = new ImageRequest(mUrl, AsyncImageView.this, mImageProcessor, mOptions);
+            return mRequest;
+		}
+    	
     }
 
     /**
@@ -450,5 +473,37 @@ public class AsyncImageView extends ImageView implements ImageRequestCallback {
             mOnImageViewLoadListener.onLoadingFailed(this, null);
         }
     }
-
+    
+    /* @kennydude bit */
+	public void setCachedViewSize(Integer width, Integer height){
+		mWidth = width;
+		mHeight = height;
+	}
+	
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    	if(this.mWidth == -1){ // Not measured
+    		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    		if(this.mBitmap != null){
+    			this.mWidth = getMeasuredWidth();
+    			this.mHeight = getMeasuredHeight();
+    			if(this.mOnViewSizeListener != null){
+    				this.mOnViewSizeListener.onViewSizeCached(this.mWidth, this.mHeight);
+    			}
+    		}
+    	} else{
+    		setMeasuredDimension(this.mWidth, this.mHeight);
+    	}
+    }
+    
+	public Integer mWidth = -1;
+	public Integer mHeight = -1;
+	private OnViewSizeListener mOnViewSizeListener;
+	public static interface OnViewSizeListener{
+		void onViewSizeCached(Integer width, Integer height);
+	}
+	public void setOnViewSizeListener(OnViewSizeListener listener) {
+		mOnViewSizeListener = listener;
+	}
+	
 }
