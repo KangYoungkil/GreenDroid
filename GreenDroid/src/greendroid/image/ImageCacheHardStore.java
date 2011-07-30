@@ -109,7 +109,7 @@ public class ImageCacheHardStore {
 		if (!fileUri.exists()) return null;
 
 		// Cache life of about 6 hours. TODO: Option
-		if ((fileUri.lastModified() + (60*60*6)) > System.currentTimeMillis()) {
+		if ((fileUri.lastModified() + (60*60*6*1000)) > System.currentTimeMillis()) {
 			if (fileUri.delete()) {
 				Log.d("CACHE", "An old cached version of a file was deleted");
 				return null;
@@ -165,7 +165,7 @@ public class ImageCacheHardStore {
 		if (fullCacheDir.exists()) {
 			if (fullCacheDir.isDirectory()) {
 				for (File f : fullCacheDir.listFiles()) {
-					if ((f.lastModified() + (60*60*6)) > System.currentTimeMillis()) {
+					if ((f.lastModified() + (60*60*6*1000)) > System.currentTimeMillis()) {
 						if (f.delete()) {
 							Log.d("CACHE", "An old cached version of a file was deleted");
 						}

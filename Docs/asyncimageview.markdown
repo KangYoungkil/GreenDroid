@@ -3,6 +3,21 @@ Using AsyncImageView
 
 AsyncImageView is a normal Android ImageView, however it allows you to easily and safely grab images from the internet.
 
+AndroidManifest.xml Changes
+---------------------------
+
+If you're using the kennydude version of GreenDroid then GreenDroid contains an automatic cleaner which dumps the rubbish out of cache which is old. However, you need to add this to your AndroidManifest.xml:
+
+> `<!-- GreenDroid -->`
+
+> `<receiver
+	android:name="greendroid.image.ClearImageCacheTask" />`
+
+> `<service
+	android:name="greendroid.image.ClearImageCacheTask$TheService" />`
+
+(Basially, we use AlarmManager to call the task which needs a service otherwise Android will force-close your app)
+
 How to change from an ImageView
 -------------------------------
 
