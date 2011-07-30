@@ -33,6 +33,8 @@ public abstract class ImageCache implements OnLowMemoryListener {
 
 	public abstract void flush();
 	
+	public abstract void cleanupCache();
+	
 	abstract void resetPurgeTimer();
 
 }

@@ -67,4 +67,9 @@ public class ImageCacheSoft extends ImageCache {
 	public void onLowMemoryReceived() {
 		flush();
 	}
+
+	@Override
+	public void cleanupCache() {
+		/// in-memory cache doesn't work like this
+	}
 }

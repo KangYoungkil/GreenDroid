@@ -56,4 +56,10 @@ public class ImageCacheHard extends ImageCache {
 
 	@Override
 	public void onLowMemoryReceived() { }
+
+	@Override
+	public void cleanupCache() {
+		// This prunes all old cache on a timer basis
+		cache.cleanupCache();
+	}
 }

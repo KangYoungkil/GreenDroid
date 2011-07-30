@@ -4,19 +4,16 @@ package greendroid.image;
  * @author Sergi Juanola
  */
 import greendroid.util.Config;
-import greendroid.util.GDUtils;
 import greendroid.util.Md5Util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
 
 public class ImageCacheHardStore {
@@ -112,7 +109,7 @@ public class ImageCacheHardStore {
 		if (!fileUri.exists()) return null;
 
 		// Cache life of about 6 hours. TODO: Option
-		if ((fileUri.lastModified() + (60*60*6)) < System.currentTimeMillis()) {
+		if ((fileUri.lastModified() + (60*60*6)) > System.currentTimeMillis()) {
 			if (fileUri.delete()) {
 				Log.d("CACHE", "An old cached version of a file was deleted");
 				return null;
@@ -161,6 +158,22 @@ public class ImageCacheHardStore {
 		}
 
 		return numberFilesDeleted;
+	}
+
+	public void cleanupCache() {
+		Log.d("cache", "hard image cache go");
+		if (fullCacheDir.exists()) {
+			if (fullCacheDir.isDirectory()) {
+				for (File f : fullCacheDir.listFiles()) {
+					if ((f.lastModified() + (60*60*6)) > System.currentTimeMillis()) {
+						if (f.delete()) {
+							Log.d("CACHE", "An old cached version of a file was deleted");
+						}
+					}
+				}
+			}
+		}
+		Log.d("cache", "cache was cleaned automagically");
 	}
 
 }

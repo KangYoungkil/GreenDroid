@@ -15,19 +15,25 @@
  */
 package greendroid.image;
 
+import greendroid.app.GDApplication;
 import greendroid.util.Config;
 import greendroid.util.GDUtils;
 
 import java.net.URL;
+import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -145,6 +151,18 @@ public class ImageLoader {
 						}
 					}
 				}
+				
+				// @kennydude here will schedule the cleaner to arrive shortly
+				Intent cict = new Intent(GDApplication._getContext(), ClearImageCacheTask.class);
+				PendingIntent pi = PendingIntent.getBroadcast(GDApplication._getContext(), 0, cict, PendingIntent.FLAG_ONE_SHOT);
+				AlarmManager alm = (AlarmManager) GDApplication._getContext().getSystemService(Context.ALARM_SERVICE);
+				alm.cancel(pi);
+				Calendar c = Calendar.getInstance();
+		        c.setTimeInMillis(System.currentTimeMillis());
+		        c.add(Calendar.SECOND, 30);
+				alm.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
+						AlarmManager.INTERVAL_DAY, pi);
+				Log.d("gd", "The cleaner was scheduled :)");
 
 			} catch (Exception e) {
 				// An error occured while retrieving the image

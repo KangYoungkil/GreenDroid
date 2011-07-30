@@ -176,15 +176,21 @@ public class GDApplication extends Application {
     @Override
 	public void onCreate(){
     	super.onCreate();
-    	mResources = getResources();
+    	mMe = this;
+    }
+    
+    public static Context _getContext(){
+    	if(mMe == null)
+    		mMe = new GDApplication();
+    	return mMe;
     }
     
     // @kennydude edits bellow!
-    static Resources mResources;
+    static Context mMe;
     public static Resources getAppResources(){
-    	if(mResources == null)
-			mResources = new GDApplication().getResources();
-		return mResources;
+    	if(mMe == null)
+			mMe = new GDApplication();
+		return mMe.getResources();
     }
 	
 }
