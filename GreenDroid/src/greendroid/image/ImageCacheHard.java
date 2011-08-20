@@ -13,9 +13,9 @@ import android.os.Environment;
 
 public class ImageCacheHard extends ImageCache {
 	
-	public ImageCacheHard(Application app){
+	public ImageCacheHard(Application app, Boolean sdcard){
 		super();
-		cache = ImageCacheHardStore.getInstance(app);
+		cache = ImageCacheHardStore.getInstance(app, sdcard);
 	}
 
 	// Singleton of the actual SD Cache

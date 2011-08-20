@@ -15,14 +15,14 @@ public class ImageCacheSoft extends ImageCache {
 
 	private final ConcurrentHashMap<String, SoftReference<Bitmap>> mSoftCache;
 
-	private final Handler purgeHandler = new Handler();
+	// private final Handler purgeHandler = new Handler();
 
-	private final Runnable purger = new Runnable() {
+	/*private final Runnable purger = new Runnable() {
 		public void run() {
 			Log.i("ImageCache", "Flushing Memory Cache");
 			flush();
 		}
-	};
+	}; */
 
 	public ImageCacheSoft(Context context) {
 		mSoftCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>();
@@ -59,9 +59,10 @@ public class ImageCacheSoft extends ImageCache {
 		mSoftCache.clear();
 	}
 
-	void resetPurgeTimer() {
+	void resetPurgeTimer() { /*
 		purgeHandler.removeCallbacks(purger);
 		purgeHandler.postDelayed(purger, DELAY_BEFORE_PURGE);
+		*/
 	}
 
 	public void onLowMemoryReceived() {

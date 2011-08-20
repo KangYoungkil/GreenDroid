@@ -31,7 +31,7 @@ import com.cyrilmottier.android.greendroid.R;
  */
 public abstract class ActionBarItem {
 
-    public enum Type {
+    public static enum Type {
         GoHome, // A house
         Search, // A magnifying glass
         Talk, // A speech bubble

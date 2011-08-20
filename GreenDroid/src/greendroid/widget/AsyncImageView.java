@@ -27,6 +27,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;

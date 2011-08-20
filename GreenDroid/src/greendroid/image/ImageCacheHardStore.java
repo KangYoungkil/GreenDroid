@@ -14,6 +14,7 @@ import java.io.IOException;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Log;
 
 public class ImageCacheHardStore {
@@ -22,15 +23,21 @@ public class ImageCacheHardStore {
 	private File fullCacheDir;
 	private static BitmapFactory.Options sOptions;
 
-	private ImageCacheHardStore(Application app) {
+	private ImageCacheHardStore(Application app, Boolean sdcard) {
 
 		if (sOptions == null) {
 			sOptions = new BitmapFactory.Options();
 			sOptions.inDither = true;
 			sOptions.inScaled = true;
 		}
-
-		fullCacheDir = new File(app.getCacheDir(), "cache");
+		if(sdcard == true){
+			fullCacheDir = new File( new File( new File(
+					new File(Environment.getExternalStorageDirectory(), "Android"), "data"),
+					app.getPackageName()), "cache" );
+		} else{
+			fullCacheDir = new File(app.getCacheDir(), "cache");
+		}
+		
 		if (!fullCacheDir.exists()) {
 			if (Config.GD_INFO_LOGS_ENABLED) {
 				Log.i("CACHE", "Directory doesn't exist");
@@ -54,14 +61,14 @@ public class ImageCacheHardStore {
 		}
 	}
 
-	private synchronized static void createInstance(Application app) {
+	private synchronized static void createInstance(Application app, Boolean sdcard) {
 		if (INSTANCE == null) {
-			INSTANCE = new ImageCacheHardStore(app);
+			INSTANCE = new ImageCacheHardStore(app, sdcard);
 		}
 	}
 
-	public static ImageCacheHardStore getInstance(Application app) {
-		if (INSTANCE == null) createInstance(app);
+	public static ImageCacheHardStore getInstance(Application app, Boolean sdcard) {
+		if (INSTANCE == null) createInstance(app, sdcard);
 		return INSTANCE;
 	}
 
